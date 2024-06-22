@@ -1,0 +1,44 @@
+default-extensions: 
+  - StrictData
+  - RecordWildCards
+  - OverloadedStrings
+  - DataKinds
+  - ScopedTypeVariables
+  - QuasiQuotes
+
+dependencies:
+  - base
+  - haskell-say
+  - text
+  - containers
+  - bytestring
+  - binary
+  - extra
+  - type-natural
+  - interpolatedstring-perl6
+  - xp-asm
+
+ghc-options:
+  - -Wall
+  - -Werror
+  - -Wno-orphans
+
+library:
+  source-dirs: 
+    - src
+
+executable:
+  main: Main.hs
+  source-dirs: 
+    - src
+
+# tests:
+#   xp-asm-test:
+#     main: MainTest
+#     source-dirs: 
+#       - test
+#       - src
+#     dependencies:
+#       - hspec
+#       - quickcheck-instances
+#         # - xp-asm
