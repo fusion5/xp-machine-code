@@ -12,32 +12,29 @@
       (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
-          overlay = (final: prev: {
+          extension = (final: prev: {
             xp-machine-code = final.callCabal2nix "xp-machine-code" ./. {};
-            xp-asm = xp-asm.packages.${system}.xp-asm;
+            # xp-asm = xp-asm.packages.${system}.xp-asm;
+            # FIXME: this works, but why can't we import the package via the
+            # flake as above?
+            xp-asm = final.callCabal2nix "xp-asm" xp-asm {};
           });
-          myHaskellPackages = pkgs.haskellPackages.extend overlay;
+          myHaskellPackages = pkgs.haskellPackages.extend extension;
         in
         {
-          packages.xp-machine-code = pkgs.haskellPackages.xp-machine-code;
+          packages.xp-machine-code = myHaskellPackages.xp-machine-code;
           defaultPackage = self.packages.${system}.xp-machine-code;
           checks = self.packages;
           test = myHaskellPackages;
           devShell = myHaskellPackages.shellFor {
-            packages = p: [
-              # self.packages.${system}.xp-machine-code
-              # xp-asm.packages.${system}.xp-asm
-              p.xp-machine-code
-              p.xp-asm
-              # pkgs.haskellPackages.xp-machine-code
-              # (pkgs.haskellPackages.callCabal2nix "xp-machine-code" ./. {})
-              # xp-asm.packages.${system}.xp-asm
-            ];
+            # The packages for which to build the development environment
+            packages = p: [ p.xp-machine-code ];
             withHoogle = false;
             buildInputs = [
-              pkgs.haskellPackages.haskell-language-server
-              pkgs.haskellPackages.ghcid
-              pkgs.haskellPackages.cabal-install
+              myHaskellPackages.xp-asm
+              myHaskellPackages.haskell-language-server
+              myHaskellPackages.ghcid
+              myHaskellPackages.cabal-install #TODO: move to nativeBuildInputs?
               feedback.packages.${system}.default
             ];
             # Change the prompt to show that you are in a devShell

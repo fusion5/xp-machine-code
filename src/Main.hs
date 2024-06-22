@@ -2,7 +2,7 @@ module Main where
 
 import Common
 
-import ASM
+import ASM ()
 
 main :: IO ()
-main = putStrLn "Hello World (Dragos)!"
+main = putStrLn [qq|Hello World! - Dragos|]
